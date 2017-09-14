@@ -110,14 +110,15 @@
   (interactive (list nil current-prefix-arg))
   (let ((completing-read-func (if (null ido-mode)
                                   'completing-read
-				'ido-completing-read)))
+                                'ido-completing-read))
+        (collection (yari-ruby-obarray rehash)))
     (setq ri-topic (or ri-topic
-                       (funcall completing-read-func
+                       (yari-expand (funcall completing-read-func
 				"yari: "
-				(yari-ruby-obarray rehash)
+				collection
 				nil
-				t
-				(yari-symbol-at-point)))))
+				nil
+				(yari-symbol-at-point))))))
   (let ((yari-buffer-name (format "*yari %s*" ri-topic)))
     (unless (get-buffer yari-buffer-name)
       (let ((yari-buffer (get-buffer-create yari-buffer-name))
@@ -129,6 +130,16 @@
           (goto-char (point-min))
           (yari-mode))))
     (display-buffer yari-buffer-name)))
+
+(defun yari-expand (expr)
+  "Expand a shortcut to it's full name"
+  (let* ((expr (replace-regexp-in-string "^S\\." "String#" expr t))
+         (expr (replace-regexp-in-string "^A\\." "Array#" expr t))
+         (expr (replace-regexp-in-string "^E\\." "Enumerable#" expr t))
+         (expr (replace-regexp-in-string "^S$" "String" expr t))
+         (expr (replace-regexp-in-string "^A$" "Array" expr t))
+         (expr (replace-regexp-in-string "^E$" "Enumerable" expr t)))
+    expr))
 
 (defun yari-symbol-at-point ()
   ;; TODO: make this smart about class/module at point
