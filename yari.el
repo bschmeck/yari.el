@@ -143,6 +143,8 @@
     (define-key map (kbd "q")    'quit-window)
     (define-key map (kbd "SPC")  'scroll-up)
     (define-key map (kbd "\C-?") 'scroll-down)
+    (define-key map (kbd "M-n")  'forward-button)
+    (define-key map (kbd "M-p")  'backward-button)
     map))
 
 (defun yari-mode ()
